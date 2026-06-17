@@ -1,0 +1,325 @@
+-------------------------------------------------------------
+COURS M2 Bijan Mohammadi Universite de Montpellier
+-------------------------------------------------------------
+https://umontpellier-fr.zoom.us/my/bijan.mohammadi.zoom
+--------------------------------------------------------------
+
+contenus sur https://imag.umontpellier.fr/~mohamadi/ADAPT/
+
+-----------------------------
+FAIRE VOTRE PAGE WEB (sur GIT)
+Creer un compte github
+
+Creer votre page web + d'autre repo avec vos projets passes
+
+Y DEPOSER:
+-VOTRE CV
+-Vos realisations dans ce cours
+-TOUS LES AUTRES PROJETS
+m'envoyer le lien par email: la qualite de votre page sera prise en compte dans la note à l'examen.
+
+-----------------------------
+
+SEANCE 1 
+-Prise en main de spyder ou jupyter notebook (ou autre interface programmation Python)
+
+code Euler_ODE_Errors.py
+Faire ce code Python pour resoudre l'equation differentielle suivante:
+(vous pouver utiliser une IA generative)
+
+u,t = - lambda u, u(0)=1,  lambda = 1 
+
+en utilisant un schema d'Euler explicit et comparer avec la solution exacte: uex(t)= u0 exp(-lambda t)
+
+Tracer les solution exacte et numerique et l'erreur en temps sur 1 minute pour Dt=1s.
+
+Pour 20 pas de temps Dt decroissants de 1s a 0.001s, tracer la courbe de l'erreur L2 de la fonction 
+et de sa derivee "en fonction du pas de temps". 
+Mettre les figures cote a cote, avec les bons labels et titre.
+
+------------------------------------------------------------------------
+
+LIRE JUSQU'A 4/ poly_adapopt_bm.pdf
+
+----------------------------------------------------------------------
+
+Voir Annexe B du POLY.pdf pour rappel des definitions
+
+V=(v1, v2)
+u,t + <V , grad u > -  nu div( grad u) = -lambda u + f
+u,t + v1 u,x + v2 u,y - nu ( u,xx + u,yy ) = -lambda u + f
+
+Conditions aux limites de Dirichlet uniquement lorsque V.n(s)<0 (bords entrants)
+
+Ouvrir un compte sur une IA generative.
+
+Utiliser une IA generative pour generer un code python pour resoudre cette equation 
+dans un domaine rectangulaire avec 
+f(t,s) = Tc exp(-k d(s,sc)**2)   avec d(s,sc)**2 = (s1 - sc1)**2 + (s2 - sc2)**2 
+
+Illustrer la solution et l'erreur L2 sur la solution et la norme de son gradient (3 figures cote a cote).
+
+----------------------------------------------------------------------
+
+Passage en 1D (expliquer ce passage):
+u,t + v1 u,x - nu  u,xx = -lambda u + f
++ condition initiale u(t=0,x)=u0(x) : conforme avec les conditions aux limites
++ conditions aux limites:   u(t,x=0)=ul,  u,x(t,x=L)=g
+cad Dirichlet non homogene a gauche et Neuman non homogene a droite.
+
+Demander a l'IA generative un u0 compatible avec les CL a gauche et a droite.
+Ou proposer vous meme, et verifier avec l'IA generative ou a la main.
+
+------------------------------------------------------------------------
+Rappel
+Discretization : order of accuracy 
+Finite differences.
+
+2nd order derivative:
+u_i+1 = u_i + ux_i h + u2x_i h^2/2 + u3x h^3/3! + u4x h^4/4!   
+u_i-1 = u_i - ux_i h + u2x_i h^2/2 - u3x h^3/3! + u4x h^4/4! 
+Adding the  2 lines:
+u_i+1 -2 u_i + u_i-1 = u2x_i h^2 + 2 u4x h^4/4!
+Divide by h^2:
+(u_i+1 - 2 u_i + u_i-1)/h^2 = u2x_i  (+ 2 u4x h^2/4!)  the rest gives the accuracy of the scheme
+Only inside the domain: on boundaries the order degrades.
+
+1st order derivative:
+u_i+1 = u_i + ux_i h + u2x_i h^2/2 + u3x h^3/3! + u4x h^4/4!   
+u_i-1 = u_i - ux_i h + u2x_i h^2/2 - u3x h^3/3! + u4x h^4/4! 
+Substract the 2 lines:
+u_i+1 - u_i-1 = 2 ux_i h + 2 u3x h^3/3!
+Divide by h:
+(u_i+1 - u_i-1)/h = ux_i (+ 2 u3x h^2/3! )  => 2nd order.
+On boundaries:
+Left:
+u_i+1 - u_i  =  ux_i h + u2x_i h^2/2 + u3x h^3/3! + u4x h^4/4!   
+Divide by h:
+(u_i+1 - u_i)/h  =  ux_i (+ u2x_i h/2 ) order 1.
+Right:
+(u_i - u_i-1)/h  =  ux_i (+ u2x_i h/2 ) order 1.
+
+----------------------------------------------------------
+
+SEANCE 2
+
+Soit:
+-comprendre le code Python adrs.py pour resoudre:
+
+-pour u(s)=uex(s) = exp(-10*(s-L/2)**2), trouver f, la porter dans le code
+u,t + v u,s - nu  u,ss  + lambda u = f(s)
+v=1, nu=0.01, lambda=1   L=1
+
+-demander a l'IA generative ce que fait le code.
+
+Identifier ou sont les elements suivants dans le code vu en seance
+-boucle de rafinement du maillage, passer en un maillage fixe de 100 points
+-decentrage = centre + viscosite numerique  (chap 12)
+-remplacer l'implementation par viscosite numerique par un decentrage amont, en gerant les cas c>0 et c<0 (avec un if)
+-condition de stabilite CFL (chap 10)
+-marche en temps vers la solution stationnaire
+-quelle condition en sortie est implementee actuellement ? 
+u1(n)=u1(n-1)-ux*(xmax-x(n-1))+uxx(n-1)*(xmax-x(n-1))**2/2 
+u1(n)=u1(n-1)+ux*h+uxx(n-1)*h**2/2  ==> u1(n)=u1(n-1)+uxx(n-1)*h**2/2 
+-implementer u,s(s=L)=0
+
+-Implementer f_h(s_h) dans le code et verifier si on retrouve uex_h(s_h) ?
+
+maillage uniforme en N points = discretisation de [0,L] en (N-1) intervalles s_i = (i-1)*h avec h=L/(N-1) 
+
+-s'assurer de la convergence vers la solution stationnaire pour un maillage de 100 points (comment faire ?)
+-tracer la convergence ||un+1 - un||_L2  normalisee
+-calculer apres convergence les normes L2 et H1 de (u_h-uexact) pour 5 maillages, partant de 3 points.
+-tracer l'erreur L2 et H1 en fonction de h=dx pour ces 5 maillages
+-Placer les images cote a cote avec bons labels...
+
+-------------------------------------------------------------
+
+adrs avec rafinement ==> code adrs_multiple_mesh.py
+
+-4  -> Identification de parametres, precision d'un code ?
+-regarder thm 18.1.3 (relation entre l'erreur d'interpolation et la derivee seconde)
+
+-Evaluer en discret les normes des differences du poly sur les differents maillages 
+(L2 difference solutions et derivees approchee et exacte, 
+L2 difference solutions exacte et son interpole P1, derivee seconde).
+
+Sauver la norme L2, la norme H1, la semi-norme H2 pour chaque dx.
+Utiliser un algorithme d'optimisation pour identifier (C,k) et trouver M.  
+Poly 2.3.1  (c'est un probleme d'identification de parametre par solution d'un pb de regression polynominal)
+quel est l'ordre en espace de ce code ?
+
+|u − uh|_{0,2} < C h^k |u|_{2,2}
+
+Apres avoir trouve x_opt=(C,k), superposer les courbes : C h^(k+1), C h^k et |u − uh|_{0,2} / |u|_{2,2} 
+
+Decrire le workflow avec un diagramme
+
+-------------------------------------------------------------
+
+code integration_riemann_lebesgues.py
+
+SEANCES 3-4 : estimation d'erreur a posteriori et adaptation de maillage
+
+Comprendre l'adaptation a posteriori en comparant l'integration de Riemann et Lebesgues
+pour calculer l'integrale de :
+f(x)=a*x**2 + b*x + c *np.sin(4*np.pi*x) + 10*np.exp(-100*(x-0.5)**2),
+a = 0.5, b = 10, c=3 sur (Left,Right)=(0,1) 
+Integral= 6.94
+Tracer la fonction
+Suivre le workflow dans chaque cas et 
+1. integrer en Riemann cette fonction (pas uniforme en x : (xmax-xmin)/(N-1))
+2.a. integrer en Lebesgues cette fonction (pas uniforme en y : dy = (ymax-ymin)/(N-1))
+2.b. utiliser une suite de Cauchy pour décider de reduire l'echantillonnage necessaire en Lebesgues
+3. comment adapter le pas d'integration (Lebesgues-genre) pour avoir un pas uniforme en y=f(x), et non pas en x ?
+(utilisation de l'estimation de l'erreur d'interpolation et adaptation par controle de metrique).
+
+Dans chaque cas, trouver l'echantillonnage qui donne une precision a 1.e-3
+
+regarder parcours de frederic alauzet (inria/maillage) et guillaume puigt (onera/CFD)
+presentation g. puigt 14/11 10h
+
+-------------------------------------------------------------
+
+Meme exercice avec integrale de  f(x)=1/sqrt(1-x**2) (=pi) sur ]-1,1[ par 
+integration de Riemann, Lebesgues, et "Monte Carlo" (option).
+tracer les courbes d'erreurs en fonction de nombre d'evaluations de la fonction
+
+--------------------------------------------------------------
+
+code adrs_multiple_mesh_adap.py
+
+-lire 18.4.2
+-Identifier les etapes de 5/
+-identifier la definition de la metrique dans le code (quelle loi est en place ?)
+-implementer la loi 3
+-tracer NX(err) pour err=0.04, 0.02, 0.01, 0.005, 0.0025
+-comment evolue NX en fonction de err ?
+-Quels sont les criteres d'arret pour l'iteration d'adaptation. 
+Introduire un critere mixte portant sur le nombre de points de maillage et l'erreur L2: ne pas s'arreter 
+tant que les 2 ne sont pas realises.
+-Identifier la contraction dans ce code: introduire un maillage background fin, interpoler chaque solution sur ce maillage
+et visualiser l'evolution de la difference entre solutions interpolées successives. Modifier le pptx du workflow.
+
+-------------------------------------------------------------
+
+SEANCES 4-5 
+
+Code adrs_insta.py : solution instationnaire avec solution exacte cible instationnaire a creer.
+-Visualiser l'erreur a T/2 and T(fin de calcul) pour differents maillages uniformes.
+-Visualiser l'evolution de l'erreur au point milieu du domaine pour differents Runge-Kutta (1-4).
+
+----
+
+Code adrs_insta_multiple_mesh_adap.py a partir de adrs_multiple_mesh_adap.py
+
+AVEC UN TERME SOURCE DEPENDANT DU TEMPS calcule pour uex(t,s)=u(t) v(s)
+--> f(s,t)
+
+-modifier le code avec ce terme source.
+-le residu ne converge pas vers 0 car instationnaire:
+u(t)v(s)=sin(4*pi*t) v(s) => u'*v=4*pi*cos(4*pi*t)*v(s)
+
+-visualiser la solution a differents instants pour Time=1s
+
+-Quels sont les criteres d'arret pour l'iteration d'adaptation. 
+Introduire un critere mixte portant sur le nombre de points de maillage et l'erreur L2: 
+ne pas s'arreter tant que les 2 ne sont pas realises.
+
+-que donne le maillage adaptatif avec controle de metrique stationnaire (base sur la solution finale en t=Time).
+
+-introduire les etapes de l'adaptation en instationnaire (intersection des metriques en temps) 
+dans le code (moyenne en temps des metriques).
+Lire : 18.7.1 (instationnaire) --> 427
+
+-------------------------------------------------------------
+SEANCE 6 :  Partie 9
+
+code optim_adrs.py 
+
+--> Optimisation en utilisant la linearite de l'equation d'etat par rapport aux controles.
+
+ADRS avec N controles sources:
+
+Tracer la surface J(x1,x2,....) en echantillonnant les deux premiers controles (les autres fixes).
+
+Si l'adaptation de maillage est utilisee lors des calcul des solutions et seconds membres elementaires, 
+ces quantites ne seront pas disponibles  sur le meme maillage.
+Comment calculer alors numeriquement les expressions Aij et Bi ?
+
+Quelle doit etre la precision de l'integration numerique approchee (Aij, Bi)
+pour ne pas introduire d'erreur supplementaire a ce niveau ? voir poly_cours
+
+Modifier le code fourni pour repondre aux questions precedentes (en introduisant l'adaptation 
+et l'interpolation entre maillages).
+
+comparer le controle optimal obtenu avec la solution sur maillage fixe (assez fin pour servir de
+reference).
+
+///////////////////////////////////////////////////
+0. ADRS (xcible = (1,2,3,4) --> udes=u(xcible) --> J(xcible)= 1/2 ||u(xcible)-udes||^2 
+1. ADRS (x) --> u(x) --> J(x)= 1/2 ||u(x)-udes||^2
+2. Utiliser un minimiseur python pour trouver xopt 
+3. Utiliser la linéarité de l'équation ADRS pour simplifier les calculs (voir plus bas)
+
+////////////////////////////////////////////////////
+
+Algorithm
+
+Probleme inverse
+define Xopt=(1,2,3,4)  in R^4
+define udes=u(Xopt) par ex
+
+J(x) = min_x 1/2 ||u(x)-udes||^2  -> X* = Xopt ?
+
+X* such that Grad_x J(X*) = 0
+
+---
+Refinement loop Th2 
+
+find U0
+find U1, U2, U3, U4 <- U(ei)
+
+Calculate :  Grad_x J(u(x)) = Ax-b = 0  (to show)
+Aij= <ui,uj>L2
+bi=<ui,(u(x)-udes)>L2
+
+Invert A X* = b with x=(alpha_1,...,alpha_4)
+ 
+check if u(X*)=udes? calculating J(Xopt) = ||u(X*)-udes||^2 and if Xopt = X*
+//////////////////////////////////////////////////////
+
+Introduce a refinement loop and see the impact on the convergence to Xopt (plot each component of X*(h)). 
+Plot J(X*(h)) and error=||X*(h) - Xopt||
+
+Now look for udes=1 (we do not know Xopt) and see how close you can get with this control ?
+Plot J(X*(h)) and the evolution of each component of X*(h)
+
+Gradient calculation
+Grad_x J(u(x)) = Ax-b = 0 
+J=1/2 h sum_i=1^NX (u0 + (sum_j=1^nbc x_j u_j) - udes)**2   
+Grad_xj J(u(x)) = h sum_i=1^NX (u0(i) + (sum_j=1^nbc x_j u_j(i)) - udes) u_k(i),  for j,k=1,...,nbc
+
+h sum_i=1^NX ((sum_j=1^nbc x_j u_j) u_k(i)) = - h sum_i=1^NX (u0(i) - udes(i)) u_k(i)  for k=1,...,nbc
+sum_j=1^nbc x_j (h sum_i=1^NX ( u_j(i) u_k(i)) = h sum_i=1^NX (udes(i) - u0(i) ) u_k(i)
+
+A x = b
+
+Aij= <ui,uj>L2
+bi=<ui,(udes - u0(x))>L2
+
+-------------------------------------------------------------
+SEANCE 7:
+Freefem, evalution d'un code boite-noire pour le calcul adaptatif
+Execution en ligne sur le site Freefem des scripts donnes en Freefem/
+Comprendre les scripts
+-adaptation simple de maillage a une fonction
+-transport avec methode d'adaptation stationnaire
+-transport avec methode d'adaptation instationnaire
+
+-------------------------------------------------------------
+SEANCE 7 (20/10 16h30) : EXAMEN
+
+Examen ecrit + releve de compteur sur les sites web (50% de la note)
+
+-------------------------------------------------------------

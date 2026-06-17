@@ -1,0 +1,57 @@
+// This a the rotating hill problem 
+
+int kt=6;
+int kloop=5;
+int nbadap=60;  // initialization 
+
+bool inq=0;
+real tol=0.05;
+real tol2=3e-4;
+real errl20=1;
+
+border a(t=0, 2*pi)     {    x = cos(t);    y = sin(t);  }; // the unit circle
+mesh th = buildmesh(a(70));                                 // triangulates the disk
+fespace Vh(th,P1);
+
+Vh u1 = y, u2 = -x;           // rotation velocity
+Vh m11=0,m22=0,m12=0;         // to store the metric field
+Vh vT;                        // to save the initial in big loop
+int i;
+Vh vv,vo,vp; // working  Finite element function 
+
+
+
+func rhill=sqrt((x-0.3)^2 +(y-0.3)^2);
+func  hill = 1-tanh(30*(rhill-0.2));
+//func real hill(real r2)  { return 1-tanh(100*(r2-0.04));}
+
+Vh v = hill;//((x-0.3)^2 +(y-0.3)^2);     // initial condition
+
+plot(v,wait=1);
+vp=0;
+
+// initialization of the hill and mesh
+
+ofstream file("convergence.txt");
+file.precision(14);
+
+for (int i=0;i<nbadap;i++)
+ {
+  th=adaptmesh(th,v,err=tol,hmax=0.5,hmin=0.01,inquire=inq);
+  v = hill;//((x-0.3)^2 +(y-0.3)^2);
+        real errl2= sqrt(int2d(th)(square(vp-v))) ;
+ 
+   if (i == 0) {errl20=errl2;}
+ file << errl2/errl20 << endl;
+		
+  vp=vp-v;      
+  cout << " interation adp =" << i << "  err l2 = " << errl2 
+       << " diff min = " << vp[].min << " max =" << vp[].max << endl
+       << " --------------- " << endl; 
+  vp=v;
+  if (errl2  < tol2) break;
+plot(th,v,wait=1);
+ } 
+ 
+
+
